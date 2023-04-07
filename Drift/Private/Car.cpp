@@ -42,10 +42,6 @@ ACar::ACar()
 		SpringArm->SetupAttachment(CarStaticMesh);
 			Camera->SetupAttachment(SpringArm);
 }
-void ACar::Server_SetOwner_Implementation()
-{
-
-}
 void ACar::SpawnGun_Implementation()
 {
 
@@ -228,7 +224,7 @@ void ACar::Shoot(const FInputActionValue& Value)
 													BeamGunSourceRight->GetComponentTransform().GetLocation());
 
 		
-		Server_SpawnFireEffect(HitResult.ImpactPoint);
+		Server_SpawnFireEffect(HitResult.ImpactPoint, HitResult.Normal);
 	}	
 	
 
@@ -255,19 +251,26 @@ void ACar::StartFireTimer()
 {
 	GetWorldTimerManager().SetTimer(FireTimer, this, &ACar::FireTimerFinished, FireDelay);
 }
-void ACar::Server_SpawnFireEffect_Implementation(const FVector_NetQuantize& HitPoint)
+void ACar::Server_SpawnFireEffect_Implementation(const FVector_NetQuantize& HitPoint, const FVector_NetQuantize& HitNormal)
 {
-	Multi_SpawnFireEffect(HitPoint);
+	Multi_SpawnFireEffect(HitPoint, HitNormal);
 }
-void ACar::Multi_SpawnFireEffect_Implementation(const FVector_NetQuantize& HitPoint)
+void ACar::Multi_SpawnFireEffect_Implementation(const FVector_NetQuantize& HitPoint, const FVector_NetQuantize& HitNormal)
 {
-	if (Beam) {
-		GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, FString("Multicast spawn fire fx"));
-		UNiagaraComponent* NiagaraBeamL = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), Beam, BeamGunSourceLeft->GetComponentTransform().GetLocation(), FRotator(0.f));
-		NiagaraBeamL->SetNiagaraVariableVec3(FString("beamEnd"), HitPoint);
+	if (Beam && SparkBurst) {
+		UNiagaraComponent* LeftGunEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), Beam, BeamGunSourceLeft->GetComponentTransform().GetLocation(), FRotator(0.f));
+		LeftGunEffect->SetNiagaraVariableVec3(FString("beamEnd"), HitPoint);
+
+		UNiagaraComponent* RightGunEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), Beam, BeamGunSourceRight->GetComponentTransform().GetLocation(), FRotator(0.f));
+		RightGunEffect->SetNiagaraVariableVec3(FString("beamEnd"), HitPoint);
+
+		UNiagaraComponent* RightGunSparks = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), SparkBurst, HitPoint, FRotator(0.f));
+		RightGunEffect->SetNiagaraVariableVec3(FString("BurstDirection"), HitNormal);
+
+		
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, FString("Beam null"));
+		GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, FString("Beam FX null"));
 	}
 }
 void ACar::Server_ProjectileSpawn_Implementation(const FVector& direction, const FVector& spawnPos, const FVector& carVelocity, const float charge)
@@ -344,12 +347,6 @@ void ACar::LookAround(const FInputActionValue& Value)
 	AddControllerYawInput(Value.Get<FVector2D>().X * -1);
 	AddControllerPitchInput(Value.Get<FVector2D>().Y);
 }
-void ACar::Server_AddImpulse2_Implementation(const FVector_NetQuantize& Impulse, ACar* hitCar)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, FString("Impulse") + Impulse.ToString());
-	GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, FString("Hit Name:") + this->GetName());
-	hitCar->CarStaticMesh->AddImpulse(Impulse);
-}
 void ACar::Server_SetMeshRelativeRotation_Implementation(float Yaw)
 {
 	GliderGunBeltMesh->SetRelativeRotation(FRotator(0.f, Yaw, 0.f));
@@ -369,23 +366,7 @@ void ACar::Server_Accelerate_Implementation(bool isMoving, float val)
 	IsAccelerating = isMoving;
 	accelerateInput = val;
 }
-void ACar::Impulse(const FVector& direction)
-{
-	CarStaticMesh->AddImpulse(direction);
-}
-void ACar::Server_GetOwner_Implementation()
-{
-		GEngine->AddOnScreenDebugMessage(-1, 1000.f, FColor::Magenta, FString("Server Car name") + GetName());
-		if (GetController())
-			GEngine->AddOnScreenDebugMessage(-1, 1000.f, FColor::Magenta, FString("Server Controller name") + GetController()->GetName());
-		else
-			GEngine->AddOnScreenDebugMessage(-1, 1000.f, FColor::Magenta, FString("Server CONTROL NULL"));
 
-		if (GetOwner())
-			GEngine->AddOnScreenDebugMessage(-1, 1000.f, FColor::Magenta, FString("Server OWNER NAME") + GetOwner()->GetName());
-		else
-			GEngine->AddOnScreenDebugMessage(-1, 1000.f, FColor::Magenta, FString("Server OWNER NULL"));
-}
 bool ACar::Server_AddImpulse_Validate(const FVector Impulse, UStaticMeshComponent* Mesh)
 {
 	return true;

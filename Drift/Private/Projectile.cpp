@@ -132,7 +132,7 @@ void AProjectile::moveSurroundingGliders()
 		GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red,FString("Projectile in range of: ") + *(glider->GetName()));
 		FVector impulse = glider->GetActorLocation() - GetActorLocation();
 		impulse.Normalize();
-		dynamic_cast<ACar*>(glider)->Impulse(explosionStrength*impulse);
+		dynamic_cast<ACar*>(glider)->CarStaticMesh->AddImpulse(explosionStrength*impulse);
 	}
 }
 
