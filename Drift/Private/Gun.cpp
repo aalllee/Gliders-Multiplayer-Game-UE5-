@@ -41,6 +41,8 @@ FHitResult AGun::Shoot(const FVector& traceStart, const FVector& traceDir, const
 	}
 	else {
 		UE_LOG(LogTemp, Log, TEXT("No Actors were hit"));
+		Hit.ImpactPoint = FVector_NetQuantize(TraceEnd);
+		Hit.ImpactNormal = FVector_NetQuantize(FVector(0));
 	}
 	return Hit;
 }

@@ -30,10 +30,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
-	UFUNCTION(NetMulticast, Reliable)
 	void Elim();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastElim();
 	void isDead();
 	FORCEINLINE bool IsElimmed() const { return bElimmed; }
+	FORCEINLINE float GetHealth() const { return Health; }
+	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
+
 protected:
 	
 	virtual void BeginPlay() override;
@@ -168,6 +172,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "GunFX")
 	UNiagaraSystem* SparkBurst;
 
+	FTimerHandle ElimTimer;
+	UPROPERTY(EditDefaultsOnly)
+	float ElimDelay = 3.f;
+	void ElimTimerFinished();
 
 /// <summary>
 /// HUD STUFF

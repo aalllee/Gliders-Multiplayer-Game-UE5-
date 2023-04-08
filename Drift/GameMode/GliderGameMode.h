@@ -16,4 +16,7 @@ class DRIFT_API AGliderGameMode : public AGameMode
 	
 public:
 	virtual void PlayerEliminated(class ACar* ElimmedCharacter, class AGliderController* ElimController);
+	virtual void RequestRespawn(ACar* ElimmedCharacter, AController* ElimmedController);
+	//virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 };

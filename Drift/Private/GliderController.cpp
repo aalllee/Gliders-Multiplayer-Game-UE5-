@@ -6,6 +6,7 @@
 #include "../HUD/CharacterOverlay.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Car.h"
 /*
 void AGliderController::Tick(float DeltaSeconds) {
 	if (HasAuthority())
@@ -33,9 +34,24 @@ void AGliderController::BeginPlay()
 }
 
 
+void AGliderController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	ACar* Glider = Cast<ACar>(InPawn);
+
+	if (Glider)
+	{
+		SetHUDHealth(Glider->GetHealth(), Glider->GetMaxHealth());
+	}
+}
+
+
+
 void AGliderController::SetHUDHealth(float Health, float MaxHealth)
 {
 	GliderHUD = (GliderHUD == nullptr) ? Cast<AGliderHUD>(GetHUD()) : GliderHUD;
+
 
 	if (GliderHUD
 		&& GliderHUD->CharacterOverlay

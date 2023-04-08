@@ -151,9 +151,38 @@ void ACar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	}
 }
 
-void ACar::Elim_Implementation()
+void ACar::Elim()
+{
+	MulticastElim();
+	GetWorldTimerManager().SetTimer(
+		ElimTimer,
+		this,
+		&ACar::ElimTimerFinished,
+		ElimDelay
+	);
+}
+void ACar::ElimTimerFinished()
+{
+	//only on server since called from gamemode object
+	AGliderGameMode* GliderGameMode = GetWorld()->GetAuthGameMode<AGliderGameMode>();
+	if (GliderGameMode)
+	{
+		GliderGameMode->RequestRespawn(this, Controller);
+	}
+
+}
+
+void ACar::MulticastElim_Implementation()
 {
 	bElimmed = true;
+	GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, GetName() + FString(": Eliminated"));
+
+	if (GliderPlayerController)
+	{
+		DisableInput(GliderPlayerController);
+	}
+
+
 }
 
 void ACar::isDead()
@@ -277,6 +306,7 @@ void ACar::StartFireTimer()
 {
 	GetWorldTimerManager().SetTimer(FireTimer, this, &ACar::FireTimerFinished, FireDelay);
 }
+
 void ACar::OnRep_Health()
 {
 }

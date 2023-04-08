@@ -25,11 +25,13 @@ void ADeadZone::BeginPlay()
 	
 	if (HasAuthority())
 	{
+		
 		GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Yellow, FString("begin"));
 		DeadZoneBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		DeadZoneBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 		DeadZoneBox->OnComponentBeginOverlap.AddDynamic(this, &ADeadZone::OnBoxOverlap);
 		//DeadZoneBox->OnComponentEndOverlap.AddDynamic(this, &AWeapon::OnSphereEndOverlap);
+		
 	}
 
 }
@@ -49,8 +51,7 @@ void ADeadZone::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 	ACar* Glider = Cast<ACar>(OtherActor);
 	if (Glider)
 	{
-	
-	
+		Glider->isDead();
 	}
 	
 }
