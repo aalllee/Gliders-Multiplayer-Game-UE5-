@@ -32,9 +32,7 @@ void AGliderGameMode::RequestRespawn(ACar* ElimmedCharacter, AController* Elimme
 	}
 }
 
-void AGliderGameMode::PostLogin(APlayerController* NewPlayer)
-{
-}
+
 
 void AGliderGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
@@ -43,6 +41,20 @@ void AGliderGameMode::HandleStartingNewPlayer_Implementation(APlayerController* 
 	if (NewPlayer)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Green, NewPlayer->GetName());
+	
 	}
 	
+}
+
+AActor* AGliderGameMode::ChoosePlayerStart_Implementation(AController* Player)
+{
+	int32 NumberOfPlayers = GameState.Get()->PlayerArray.Num();
+
+	GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Green, FString::FromInt(NumberOfPlayers));
+	
+
+	TArray<AActor*> PlayerStarts;
+	UGameplayStatics::GetAllActorsOfClass(this, APlayerStart::StaticClass(), PlayerStarts);
+	
+	return PlayerStarts[NumberOfPlayers-1];
 }

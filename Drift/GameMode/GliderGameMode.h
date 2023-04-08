@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+#include "GameFramework/GameStateBase.h"
 #include "GliderGameMode.generated.h"
 
 /**
@@ -19,4 +20,6 @@ public:
 	virtual void RequestRespawn(ACar* ElimmedCharacter, AController* ElimmedController);
 	//virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+	
 };
