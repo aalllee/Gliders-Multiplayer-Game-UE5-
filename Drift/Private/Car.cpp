@@ -18,6 +18,8 @@
 #include "NiagaraComponent.h"
 #include "TimerManager.h"
 #include "Net/UnrealNetwork.h"
+#include "GliderController.h"
+#include "../GameMode/GliderGameMode.h"
 
 ACar::ACar()
 {
@@ -65,6 +67,13 @@ void ACar::BeginPlay()
 			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Black, TEXT("playerControllerSetup"));
 		}
 	}
+
+	GliderPlayerController = Cast<AGliderController>(Controller);
+	if (GliderPlayerController)
+	{
+		GliderPlayerController->SetHUDHealth(Health, MaxHealth);
+	}
+
 
 	SpawnGun();
 
@@ -141,6 +150,23 @@ void ACar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(LookAroundAction, ETriggerEvent::Triggered, this, &ACar::LookAround);
 	}
 }
+
+void ACar::Elim_Implementation()
+{
+	bElimmed = true;
+}
+
+void ACar::isDead()
+{
+	AGliderGameMode* GliderGameMode = GetWorld()->GetAuthGameMode<AGliderGameMode>();
+	if (GliderGameMode)
+	{
+		GliderPlayerController = GliderPlayerController == nullptr ? Cast<AGliderController>(Controller) : GliderPlayerController;
+		GliderGameMode->PlayerEliminated(this, GliderPlayerController);
+
+	}
+}
+
 
 void ACar::AccelerateStart(const FInputActionValue& Value)
 {
@@ -250,6 +276,9 @@ void ACar::FireTimerFinished()
 void ACar::StartFireTimer()
 {
 	GetWorldTimerManager().SetTimer(FireTimer, this, &ACar::FireTimerFinished, FireDelay);
+}
+void ACar::OnRep_Health()
+{
 }
 void ACar::Server_SpawnFireEffect_Implementation(const FVector_NetQuantize& HitPoint, const FVector_NetQuantize& HitNormal)
 {
@@ -381,4 +410,5 @@ void ACar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProp
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME_CONDITION(ACar, Gun_p, COND_OwnerOnly);
+	DOREPLIFETIME(ACar, Health);
 }

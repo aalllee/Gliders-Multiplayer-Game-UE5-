@@ -29,7 +29,11 @@ public:
 	ACar();
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void Elim();
+	void isDead();
+	FORCEINLINE bool IsElimmed() const { return bElimmed; }
 protected:
 	
 	virtual void BeginPlay() override;
@@ -163,7 +167,24 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "GunFX")
 	UNiagaraSystem* SparkBurst;
-	
+
+
+/// <summary>
+/// HUD STUFF
+/// </summary>
+///
+/// 
+	UPROPERTY(EditAnywhere, Category="Player stats")
+	float MaxHealth = 100.f;
+
+	UPROPERTY(Replicated = OnRep_Health, VisibleAnywhere, Category = "Player stats")
+	float Health = 100.f;
+	UFUNCTION()
+	void OnRep_Health();
+
+	bool bElimmed = false;
+
+	class AGliderController* GliderPlayerController;
 protected:
 	///INPUT ACTIONS //////////////////////////////////////////
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")

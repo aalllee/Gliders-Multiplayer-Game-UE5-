@@ -15,4 +15,10 @@ class DRIFT_API AGliderController : public APlayerController
 	GENERATED_BODY()
 	
 	//virtual void Tick(float DeltaSeconds) override;
+public:
+	void SetHUDHealth(float Health, float MaxHealth);
+protected:
+	virtual void BeginPlay() override;
+private:
+	class AGliderHUD* GliderHUD;
 };

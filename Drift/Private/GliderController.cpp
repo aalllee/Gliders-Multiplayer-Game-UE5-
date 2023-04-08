@@ -2,6 +2,10 @@
 
 
 #include "GliderController.h"
+#include "../HUD/GliderHUD.h"
+#include "../HUD/CharacterOverlay.h"
+#include "Components/ProgressBar.h"
+#include "Components/TextBlock.h"
 /*
 void AGliderController::Tick(float DeltaSeconds) {
 	if (HasAuthority())
@@ -18,3 +22,30 @@ void AGliderController::Tick(float DeltaSeconds) {
 	
 }
 */
+
+
+void AGliderController::BeginPlay()
+{
+
+	Super::BeginPlay();
+
+	GliderHUD = Cast<AGliderHUD>(GetHUD());
+}
+
+
+void AGliderController::SetHUDHealth(float Health, float MaxHealth)
+{
+	GliderHUD = (GliderHUD == nullptr) ? Cast<AGliderHUD>(GetHUD()) : GliderHUD;
+
+	if (GliderHUD
+		&& GliderHUD->CharacterOverlay
+		&& GliderHUD->CharacterOverlay->HealthBar
+		&& GliderHUD->CharacterOverlay->HealthText)
+	{
+		const float HealthPercent = Health / MaxHealth;
+		GliderHUD->CharacterOverlay->HealthBar->SetPercent(HealthPercent);
+		FString HealthText = FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(Health), FMath::CeilToInt(MaxHealth));
+		GliderHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
+	}
+
+}
