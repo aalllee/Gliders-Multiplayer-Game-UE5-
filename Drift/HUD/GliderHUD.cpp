@@ -5,6 +5,7 @@
 #include "GameFramework/PlayerController.h"
 #include "CharacterOverlay.h"
 #include "Blueprint/UserWidget.h"
+#include "../Public/GliderController.h"
 void AGliderHUD::DrawHUD()
 {
 	Super::DrawHUD();
@@ -14,23 +15,28 @@ void AGliderHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
+	
+
 	AddCharacterOverlay();
 }
 
 void AGliderHUD::AddCharacterOverlay()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 1000.f, FColor::Yellow, TEXT("Add character overlay called"));
 	APlayerController* PlayerController = GetOwningPlayerController();
 	if (PlayerController)
 	{
-		if (CharacterOverlayClass)
-		{
-			CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
-			CharacterOverlay->AddToViewport();
-		}
+
 		if (BP_Crosshair)
 		{
 			Crosshair = CreateWidget<UUserWidget>(PlayerController, BP_Crosshair);
 			Crosshair->AddToViewport();
+		}
+		if (CharacterOverlayClass)
+		{
+			CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
+			CharacterOverlay->AddToViewport();
+			//Cast<AGliderController>(PlayerController)->SetHUDHealth(100.f, 100.f);
 		}
 	}
 }

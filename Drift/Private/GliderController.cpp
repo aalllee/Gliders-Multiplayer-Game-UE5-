@@ -27,7 +27,6 @@ void AGliderController::Tick(float DeltaSeconds) {
 
 void AGliderController::BeginPlay()
 {
-
 	Super::BeginPlay();
 
 	GliderHUD = Cast<AGliderHUD>(GetHUD());
@@ -42,7 +41,8 @@ void AGliderController::OnPossess(APawn* InPawn)
 
 	if (Glider)
 	{
-		SetHUDHealth(Glider->GetHealth(), Glider->GetMaxHealth());
+		//GEngine->AddOnScreenDebugMessage(-1, 1000.f, FColor::Orange, TEXT("FROM CONTROLLER SEt HUD HEALTH CALLED"));
+		//SetHUDHealth(Glider->GetHealth(), Glider->GetMaxHealth());
 	}
 }
 
@@ -52,7 +52,7 @@ void AGliderController::SetHUDHealth(float Health, float MaxHealth)
 {
 	GliderHUD = (GliderHUD == nullptr) ? Cast<AGliderHUD>(GetHUD()) : GliderHUD;
 
-
+	
 	if (GliderHUD
 		&& GliderHUD->CharacterOverlay
 		&& GliderHUD->CharacterOverlay->HealthBar
@@ -63,5 +63,34 @@ void AGliderController::SetHUDHealth(float Health, float MaxHealth)
 		FString HealthText = FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(Health), FMath::CeilToInt(MaxHealth));
 		GliderHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
 	}
+	else
+	{
+		if (!GliderHUD) {
+			GEngine->AddOnScreenDebugMessage(-1, 1000.f, FColor::Yellow, TEXT("HUD NULL"));
+			return;
+		}
+			
+		if (!GliderHUD->CharacterOverlay)
+			GEngine->AddOnScreenDebugMessage(-1, 1000.f, FColor::Yellow, TEXT("OVERLAY NULL"));
 
+		GEngine->AddOnScreenDebugMessage(-1, 1000.f, FColor::Green, TEXT("HUD SET NULL"));
+	}
+
+}
+
+void AGliderController::SetHUDCharge(float Charge)
+{
+	GliderHUD = (GliderHUD == nullptr) ? Cast<AGliderHUD>(GetHUD()) : GliderHUD;
+
+
+	if (GliderHUD
+		&& GliderHUD->CharacterOverlay
+		&& GliderHUD->CharacterOverlay->HealthBar
+		&& GliderHUD->CharacterOverlay->HealthText)
+	{
+	
+		GliderHUD->CharacterOverlay->HealthBar->SetPercent(Charge);
+		//FString HealthText = FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(Health), FMath::CeilToInt(MaxHealth));
+		//GliderHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
+	}
 }

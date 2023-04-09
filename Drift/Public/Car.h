@@ -54,6 +54,8 @@ protected:
 	void Shoot(const FInputActionValue& Value);
 	void ShootEnd(const FInputActionValue& Value);
 	void ShootProjectile(const FInputActionValue& Value);
+	void ChargeProjectileStart(const FInputActionValue& Value);
+	void ChargeProjectileEnd(const FInputActionValue& Value);
 	void ChargeProjectile(const FInputActionValue& Value);
 	void UpdateGunRotation();
 	void LookAround(const FInputActionValue& Value);
@@ -156,6 +158,7 @@ private:
 	bool IsSteering = false;
 	float  SteeringInput = 0.0f;
 	bool ThrusterActive = false;
+	bool IsProjectileCharging = false;
 
 	UPROPERTY(EditAnywhere)
 	UArrowComponent* ArrowComp;
@@ -193,6 +196,8 @@ private:
 	bool bElimmed = false;
 
 	class AGliderController* GliderPlayerController;
+
+
 protected:
 	///INPUT ACTIONS //////////////////////////////////////////
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")

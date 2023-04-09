@@ -21,7 +21,7 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	
 	GEngine->AddOnScreenDebugMessage(-1, 1000.f, FColor::Turquoise, FString("Car name") + NewPlayer->GetName());
 
-	if (NumberOfPlayers == 4)
+	if (NumberOfPlayers == 2)
 	{
 		UWorld* World = GetWorld();
 		if (World)

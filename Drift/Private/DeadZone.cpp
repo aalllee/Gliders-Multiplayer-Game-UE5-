@@ -45,7 +45,7 @@ void ADeadZone::Tick(float DeltaTime)
 
 void ADeadZone::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	
+	if(GEngine)
 	GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Yellow, FString("overlaped dead zone"));
 
 	ACar* Glider = Cast<ACar>(OtherActor);

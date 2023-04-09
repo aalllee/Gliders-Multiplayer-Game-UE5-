@@ -10,6 +10,8 @@ void AGliderGameMode::PlayerEliminated(ACar* ElimmedCharacter, AGliderController
 {
 	if (ElimmedCharacter)
 	{
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Yellow, FString("AGliderGameMode::PlayerEliminated"));
 		ElimmedCharacter->Elim();
 	}
 }
@@ -24,6 +26,7 @@ void AGliderGameMode::RequestRespawn(ACar* ElimmedCharacter, AController* Elimme
 
 	if (ElimmedController)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Green, FString("RESTART PLAYER"));
 		TArray<AActor*> PlayerStarts;
 		UGameplayStatics::GetAllActorsOfClass(this, APlayerStart::StaticClass(), PlayerStarts);
 		int32 Selection = FMath::RandRange(0, PlayerStarts.Num() - 1);
@@ -31,23 +34,22 @@ void AGliderGameMode::RequestRespawn(ACar* ElimmedCharacter, AController* Elimme
 	
 	}
 }
-
-
-
-void AGliderGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+/*
+void AGliderGameMode::RestartPlayer(AController* NewPlayer)
 {
-	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
-
-	if (NewPlayer)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Green, NewPlayer->GetName());
-	
-	}
-	
+	Super::RestartPlayer(NewPlayer);
 }
+
+
+
+
 
 AActor* AGliderGameMode::ChoosePlayerStart_Implementation(AController* Player)
 {
+	
+	//return Super::ChoosePlayerStart_Implementation(Player);
+	
+	
 	int32 NumberOfPlayers = GameState.Get()->PlayerArray.Num();
 
 	GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Green, FString::FromInt(NumberOfPlayers));
@@ -57,4 +59,6 @@ AActor* AGliderGameMode::ChoosePlayerStart_Implementation(AController* Player)
 	UGameplayStatics::GetAllActorsOfClass(this, APlayerStart::StaticClass(), PlayerStarts);
 	
 	return PlayerStarts[NumberOfPlayers-1];
+	
 }
+*/

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "Engine/EngineTypes.h"
 #include "GliderHUD.generated.h"
 
 class UTexture2D;
@@ -25,7 +26,7 @@ public:
 
 	class UCharacterOverlay* CharacterOverlay;
 	class UUserWidget* Crosshair;
-
+	
 protected:
 	virtual void BeginPlay() override;
 	void AddCharacterOverlay();

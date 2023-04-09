@@ -71,7 +71,8 @@ void ACar::BeginPlay()
 	GliderPlayerController = Cast<AGliderController>(Controller);
 	if (GliderPlayerController)
 	{
-		GliderPlayerController->SetHUDHealth(Health, MaxHealth);
+		//GEngine->AddOnScreenDebugMessage(-1, 1000.f, FColor::Yellow, TEXT("FROM car begin play set HUD HEALTH CALLED"));
+	//	GliderPlayerController->SetHUDHealth(Health, MaxHealth);
 	}
 
 
@@ -112,7 +113,11 @@ void ACar::Tick(float DeltaTime)
 			projectileChargeProgress = 0.f;
 			projectileCooldown = false;
 		}
-
+		if (GliderPlayerController)
+		{
+			GliderPlayerController->SetHUDCharge(projectileChargeProgress);
+		}
+		
 	}
 
 }
@@ -164,10 +169,18 @@ void ACar::Elim()
 void ACar::ElimTimerFinished()
 {
 	//only on server since called from gamemode object
-	AGliderGameMode* GliderGameMode = GetWorld()->GetAuthGameMode<AGliderGameMode>();
+
+	AGliderGameMode* GliderGameMode = nullptr;
+
+	if (UWorld* World = GetWorld())
+	{
+		GliderGameMode = World->GetAuthGameMode<AGliderGameMode>();
+	}
+
 	if (GliderGameMode)
 	{
 		GliderGameMode->RequestRespawn(this, Controller);
+	//	GliderGameMode->RestartPlayer(Controller);
 	}
 
 }
@@ -175,6 +188,7 @@ void ACar::ElimTimerFinished()
 void ACar::MulticastElim_Implementation()
 {
 	bElimmed = true;
+	if(GEngine)
 	GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, GetName() + FString(": Eliminated"));
 
 	if (GliderPlayerController)
@@ -187,12 +201,21 @@ void ACar::MulticastElim_Implementation()
 
 void ACar::isDead()
 {
-	AGliderGameMode* GliderGameMode = GetWorld()->GetAuthGameMode<AGliderGameMode>();
+	AGliderGameMode* GliderGameMode = nullptr;
+	if(UWorld* World = GetWorld())
+		GliderGameMode = GetWorld()->GetAuthGameMode<AGliderGameMode>();
+
 	if (GliderGameMode)
 	{
-		GliderPlayerController = GliderPlayerController == nullptr ? Cast<AGliderController>(Controller) : GliderPlayerController;
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Yellow, FString("ACar::isDead"));
+		GliderPlayerController = (GliderPlayerController == nullptr) ? Cast<AGliderController>(Controller) : GliderPlayerController;
 		GliderGameMode->PlayerEliminated(this, GliderPlayerController);
 
+	}
+	else {
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Yellow, FString("GLIDERGAMEMODE NULL"));
 	}
 }
 
@@ -377,6 +400,9 @@ void ACar::ChargeProjectile(const FInputActionValue& Value)
 	if (UWorld* world_p = GetWorld()) {
 		projectileChargeProgress += 1.f * UGameplayStatics::GetWorldDeltaSeconds(world_p);
 	}
+
+	if(GliderPlayerController)
+		GliderPlayerController->SetHUDCharge(projectileChargeProgress);
 }
 
 void ACar::UpdateGunRotation()
