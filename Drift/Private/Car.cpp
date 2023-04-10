@@ -52,7 +52,6 @@ void ACar::SpawnGun_Implementation()
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = GetOwner();
 		Gun_p = World->SpawnActor<AGun>(BP_Gun, FVector(0, 0, 0), FRotator(0, 0, 0), SpawnParams);
-		GEngine->AddOnScreenDebugMessage(-1, 1000.f, FColor::Red, FString("SERVER GUN SPAWNED"));
 	}
 
 }
@@ -378,13 +377,10 @@ void ACar::ShootProjectile(const FInputActionValue& Value)
 		
 		FVector spawnPoint = ArrowComp->GetComponentTransform().GetTranslation();
 		if (Gun_p) {
-			GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, FString("Shoot function in car") + FString::SanitizeFloat(projectileChargeProgress));
 			Server_ProjectileSpawn(GetControlRotation().Vector(), spawnPoint, CarStaticMesh->GetComponentVelocity(), projectileChargeProgress);
 			projectileCooldown = true;
 		}
-		else {
-			GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Turquoise, FString("Gun Null"));
-		}
+
 	}
 
 	
@@ -396,7 +392,6 @@ void ACar::ChargeProjectile(const FInputActionValue& Value)
 	if (projectileCooldown)
 		return;
 
-	GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, TEXT("charging"));
 	if (UWorld* world_p = GetWorld()) {
 		projectileChargeProgress += 1.f * UGameplayStatics::GetWorldDeltaSeconds(world_p);
 	}
@@ -404,7 +399,6 @@ void ACar::ChargeProjectile(const FInputActionValue& Value)
 	if(GliderPlayerController)
 		GliderPlayerController->SetHUDCharge(projectileChargeProgress);
 }
-
 void ACar::UpdateGunRotation()
 {
 	if (UWorld* World = GetWorld())
@@ -436,7 +430,6 @@ void ACar::Server_SetMeshRelativeRotation_Implementation(float Yaw)
 {
 	GliderGunBeltMesh->SetRelativeRotation(FRotator(0.f, Yaw, 0.f));
 }
-
 void ACar::Server_ThrusterActivate_Implementation(bool isActive)
 {
 	ThrusterActive = isActive;
@@ -451,7 +444,6 @@ void ACar::Server_Accelerate_Implementation(bool isMoving, float val)
 	IsAccelerating = isMoving;
 	accelerateInput = val;
 }
-
 bool ACar::Server_AddImpulse_Validate(const FVector Impulse, UStaticMeshComponent* Mesh)
 {
 	return true;
@@ -460,11 +452,9 @@ void ACar::Server_AddImpulse_Implementation(const FVector Impulse, UStaticMeshCo
 {
 	Mesh->AddImpulse(Impulse);
 }
-
-
 void ACar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME_CONDITION(ACar, Gun_p, COND_OwnerOnly);
-	DOREPLIFETIME(ACar, Health);
+	
 }
