@@ -16,10 +16,9 @@ class DRIFT_API UCharacterOverlay : public UUserWidget
 
 public:
 	UPROPERTY(meta = (BindWidget))
-		class UProgressBar* HealthBar;
+	class UProgressBar* ProjectileChargeBar;
 
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* HealthText;
-
+	class UTextBlock* ProjectileChargeText;
 };
 

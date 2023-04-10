@@ -16,7 +16,6 @@ class DRIFT_API AGliderController : public APlayerController
 	
 	//virtual void Tick(float DeltaSeconds) override;
 public:
-	void SetHUDHealth(float Health, float MaxHealth);
 	void SetHUDCharge(float Charge);
 	virtual void OnPossess(APawn* InPawn) override;
 

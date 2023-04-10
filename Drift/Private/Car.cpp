@@ -63,17 +63,10 @@ void ACar::BeginPlay()
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer())) {
 			Subsystem->AddMappingContext(CarMappingContext, 0);
-			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Black, TEXT("playerControllerSetup"));
 		}
 	}
 
 	GliderPlayerController = Cast<AGliderController>(Controller);
-	if (GliderPlayerController)
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 1000.f, FColor::Yellow, TEXT("FROM car begin play set HUD HEALTH CALLED"));
-	//	GliderPlayerController->SetHUDHealth(Health, MaxHealth);
-	}
-
 
 	SpawnGun();
 
@@ -81,12 +74,8 @@ void ACar::BeginPlay()
 void ACar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	if (HasAuthority())
 	{
-		if(!Gun_p)
-			GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, TEXT("gun null tick"));
-
 		if (IsAccelerating)
 		{
 			CarStaticMesh->AddForce(CarStaticMesh->GetForwardVector() * accScale * accelerateInput);
@@ -100,25 +89,8 @@ void ACar::Tick(float DeltaTime)
 			CarStaticMesh->AddForce(FVector(0.f, 0.f, 1.f * ThrusterScale));
 		}
 	}
-
 	UpdateGunRotation();
-
-
-	if (projectileCooldown) {
-		projectileChargeProgress -= 0.5f * DeltaTime;
-
-		if (projectileChargeProgress < 0.0f)
-		{
-			projectileChargeProgress = 0.f;
-			projectileCooldown = false;
-		}
-		if (GliderPlayerController)
-		{
-			GliderPlayerController->SetHUDCharge(projectileChargeProgress);
-		}
-		
-	}
-
+	HandleProjectileCooldown(DeltaTime);
 }
 void ACar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -126,10 +98,10 @@ void ACar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		//Accelerate Forward/Backward
+		
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Started, this, &ACar::AccelerateStart);
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &ACar::AccelerateEnd);
-		//Steer Left/Right
+		
 		EnhancedInputComponent->BindAction(SteerAction, ETriggerEvent::Started, this, &ACar::SteerStart);
 		EnhancedInputComponent->BindAction(SteerAction, ETriggerEvent::Completed, this, &ACar::SteerEnd);
 
@@ -137,7 +109,6 @@ void ACar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACar::ThrusterStart);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACar::ThrusterEnd);
-
 
 		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &ACar::Dash);
 
@@ -148,8 +119,6 @@ void ACar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(ShootProjectileAction, ETriggerEvent::Canceled, this, &ACar::ShootProjectile);
 		EnhancedInputComponent->BindAction(ShootProjectileAction, ETriggerEvent::Completed, this, &ACar::ShootProjectile);
 		EnhancedInputComponent->BindAction(ShootProjectileAction, ETriggerEvent::Ongoing, this, &ACar::ChargeProjectile);
-
-
 		//local
 		EnhancedInputComponent->BindAction(LookAroundAction, ETriggerEvent::Triggered, this, &ACar::LookAround);
 	}
@@ -179,7 +148,6 @@ void ACar::ElimTimerFinished()
 	if (GliderGameMode)
 	{
 		GliderGameMode->RequestRespawn(this, Controller);
-	//	GliderGameMode->RestartPlayer(Controller);
 	}
 
 }
@@ -187,15 +155,10 @@ void ACar::ElimTimerFinished()
 void ACar::MulticastElim_Implementation()
 {
 	bElimmed = true;
-	if(GEngine)
-	GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, GetName() + FString(": Eliminated"));
-
 	if (GliderPlayerController)
 	{
 		DisableInput(GliderPlayerController);
 	}
-
-
 }
 
 void ACar::isDead()
@@ -206,22 +169,17 @@ void ACar::isDead()
 
 	if (GliderGameMode)
 	{
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Yellow, FString("ACar::isDead"));
 		GliderPlayerController = (GliderPlayerController == nullptr) ? Cast<AGliderController>(Controller) : GliderPlayerController;
 		GliderGameMode->PlayerEliminated(this, GliderPlayerController);
-
 	}
 	else {
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Yellow, FString("GLIDERGAMEMODE NULL"));
+	
 	}
 }
 
 
 void ACar::AccelerateStart(const FInputActionValue& Value)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, TEXT("MoveStart"));
 	IsAccelerating = true;
 	accelerateInput = Value.Get<float>();
 	if (!HasAuthority())
@@ -229,7 +187,6 @@ void ACar::AccelerateStart(const FInputActionValue& Value)
 }
 void ACar::AccelerateEnd(const FInputActionValue& Value)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, TEXT("MoveEnd"));
 	accelerateInput = 0.f;
 	IsAccelerating = false;
 	if (!HasAuthority())
@@ -304,12 +261,6 @@ void ACar::Shoot(const FInputActionValue& Value)
 		Server_SpawnFireEffect(HitResult.ImpactPoint, HitResult.Normal);
 	}	
 	
-
-	if (!Gun_p)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, TEXT("SHOOT Gun NUll"));
-	}
-
 }
 void ACar::ShootEnd(const FInputActionValue& Value)
 {
@@ -320,7 +271,6 @@ void ACar::FireTimerFinished()
 	canFire = true;
 	if (isFireButtonDown)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, TEXT("FireFinished callback"));
 		Shoot(FInputActionValue(1.0f));
 	}
 }
@@ -329,9 +279,24 @@ void ACar::StartFireTimer()
 	GetWorldTimerManager().SetTimer(FireTimer, this, &ACar::FireTimerFinished, FireDelay);
 }
 
-void ACar::OnRep_Health()
+void ACar::HandleProjectileCooldown(float DeltaTime)
 {
+	if (projectileCooldown) {
+		projectileChargeProgress -= 0.5f * DeltaTime;
+
+		if (projectileChargeProgress < 0.0f)
+		{
+			projectileChargeProgress = 0.f;
+			projectileCooldown = false;
+		}
+		if (GliderPlayerController)
+		{
+			GliderPlayerController->SetHUDCharge(projectileChargeProgress);
+		}
+	}
 }
+
+
 void ACar::Server_SpawnFireEffect_Implementation(const FVector_NetQuantize& HitPoint, const FVector_NetQuantize& HitNormal)
 {
 	Multi_SpawnFireEffect(HitPoint, HitNormal);
@@ -349,9 +314,6 @@ void ACar::Multi_SpawnFireEffect_Implementation(const FVector_NetQuantize& HitPo
 		RightGunEffect->SetNiagaraVariableVec3(FString("BurstDirection"), HitNormal);
 
 		
-	}
-	else {
-		GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, FString("Beam FX null"));
 	}
 }
 void ACar::Server_ProjectileSpawn_Implementation(const FVector& direction, const FVector& spawnPos, const FVector& carVelocity, const float charge)

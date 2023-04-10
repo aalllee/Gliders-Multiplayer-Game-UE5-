@@ -25,18 +25,14 @@ class DRIFT_API ACar : public APawn
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
 	ACar();
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
 	void Elim();
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastElim();
 	void isDead();
 	FORCEINLINE bool IsElimmed() const { return bElimmed; }
-	FORCEINLINE float GetHealth() const { return Health; }
-	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 
 protected:
 	
@@ -152,6 +148,7 @@ public:
 	FRotator GunBeltRotation = FRotator(0, 0, 0);
 	
 private:
+	//Input and Fire 
 	bool projectileCooldown = false;
 	bool IsAccelerating = false;
 	float  accelerateInput = 0.0f;
@@ -169,32 +166,21 @@ private:
 	bool isFireButtonDown = false;
 	void FireTimerFinished();
 	void StartFireTimer();
+	void HandleProjectileCooldown(float DeltaTime);
+
+	//FX
 	UPROPERTY(EditAnywhere, Category = "GunFX")
 	UNiagaraSystem* Beam;
 
 	UPROPERTY(EditAnywhere, Category = "GunFX")
 	UNiagaraSystem* SparkBurst;
 
+	//Player Elimination
 	FTimerHandle ElimTimer;
 	UPROPERTY(EditDefaultsOnly)
 	float ElimDelay = 3.f;
 	void ElimTimerFinished();
-
-/// <summary>
-/// HUD STUFF
-/// </summary>
-///
-/// 
-	UPROPERTY(EditAnywhere, Category="Player stats")
-	float MaxHealth = 100.f;
-
-	UPROPERTY(Replicated = OnRep_Health, VisibleAnywhere, Category = "Player stats")
-	float Health = 100.f;
-	UFUNCTION()
-	void OnRep_Health();
-
 	bool bElimmed = false;
-
 	class AGliderController* GliderPlayerController;
 
 
