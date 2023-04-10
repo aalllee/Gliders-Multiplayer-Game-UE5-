@@ -16,22 +16,16 @@ class DRIFT_API AProjectile : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AProjectile();
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	void applyPhysics(const FVector impulse);
 	void fire(const FVector& linearVelocity, const FVector& direction, const float charge);
-	void setVelocity(const FVector& startPos, const FVector& direction);
-	void getIsActive();
+
 	float getLifeSpan();
 	void Destroyed() override;
 	void moveSurroundingGliders();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 	UPROPERTY(EditAnywhere)
 	float MaxSpeed = 30000.0f;
 
@@ -45,7 +39,7 @@ protected:
 	//
 	//RPCS
 	//
-
+	/*
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_SpawnNiagaraSystem(UNiagaraSystem* niagaraSys,FVector Location, FRotator Rotation);
 	bool Server_SpawnNiagaraSystem_Validate(UNiagaraSystem* niagaraSys, FVector Location, FRotator Rotation);
@@ -55,7 +49,7 @@ protected:
 	void MULTI_SpawnNiagaraSystem(UNiagaraSystem* niagaraSys, FVector Location, FRotator Rotation);
 	bool MULTI_SpawnNiagaraSystem_Validate(UNiagaraSystem* niagaraSys, FVector Location, FRotator Rotation);
 	void MULTI_SpawnNiagaraSystem_Implementation(UNiagaraSystem* niagaraSys, FVector Location, FRotator Rotation);
-
+*/
 private:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* projectileMesh;

@@ -30,7 +30,7 @@ ACar::ACar()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
-	ArrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("ProjectileSpawnPoint"));
+	ArrowCompProjectile = CreateDefaultSubobject<UArrowComponent>(TEXT("ProjectileSpawnPoint"));
 
 	BeamGunSourceLeft = CreateDefaultSubobject<UArrowComponent>(TEXT("BeamGunSourceLeft"));
 	BeamGunSourceRight = CreateDefaultSubobject<UArrowComponent>(TEXT("BeamGunSourceRight"));
@@ -40,7 +40,7 @@ ACar::ACar()
 			GliderGunBeltMesh->SetupAttachment(GliderBodyMesh);
 				BeamGunSourceLeft->SetupAttachment(GliderGunBeltMesh);
 				BeamGunSourceRight->SetupAttachment(GliderGunBeltMesh);
-				ArrowComp->SetupAttachment(GliderGunBeltMesh);
+				ArrowCompProjectile->SetupAttachment(GliderGunBeltMesh);
 		SpringArm->SetupAttachment(CarStaticMesh);
 			Camera->SetupAttachment(SpringArm);
 }
@@ -123,7 +123,6 @@ void ACar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(LookAroundAction, ETriggerEvent::Triggered, this, &ACar::LookAround);
 	}
 }
-
 void ACar::Elim()
 {
 	MulticastElim();
@@ -151,7 +150,6 @@ void ACar::ElimTimerFinished()
 	}
 
 }
-
 void ACar::MulticastElim_Implementation()
 {
 	bElimmed = true;
@@ -160,7 +158,6 @@ void ACar::MulticastElim_Implementation()
 		DisableInput(GliderPlayerController);
 	}
 }
-
 void ACar::isDead()
 {
 	AGliderGameMode* GliderGameMode = nullptr;
@@ -172,12 +169,7 @@ void ACar::isDead()
 		GliderPlayerController = (GliderPlayerController == nullptr) ? Cast<AGliderController>(Controller) : GliderPlayerController;
 		GliderGameMode->PlayerEliminated(this, GliderPlayerController);
 	}
-	else {
-	
-	}
 }
-
-
 void ACar::AccelerateStart(const FInputActionValue& Value)
 {
 	IsAccelerating = true;
@@ -192,7 +184,6 @@ void ACar::AccelerateEnd(const FInputActionValue& Value)
 	if (!HasAuthority())
 		Server_Accelerate(false, 0.f);
 }
-
 void ACar::SteerStart(const FInputActionValue& Value)
 {
 	IsSteering = true;
@@ -208,7 +199,6 @@ void ACar::SteerEnd(const FInputActionValue& Value)
 	if (!HasAuthority())
 		Server_Steer(false, SteeringInput);
 }
-
 void ACar::Jump(const FInputActionValue& Value)
 {
 	if (HasAuthority())
@@ -243,11 +233,8 @@ void ACar::Dash(const FInputActionValue& Value)
 {
 
 }
-
 void ACar::Shoot(const FInputActionValue& Value)
 {
-
-	
 	isFireButtonDown = true;
 	if (Gun_p && canFire) {
 
@@ -278,7 +265,6 @@ void ACar::StartFireTimer()
 {
 	GetWorldTimerManager().SetTimer(FireTimer, this, &ACar::FireTimerFinished, FireDelay);
 }
-
 void ACar::HandleProjectileCooldown(float DeltaTime)
 {
 	if (projectileCooldown) {
@@ -295,8 +281,6 @@ void ACar::HandleProjectileCooldown(float DeltaTime)
 		}
 	}
 }
-
-
 void ACar::Server_SpawnFireEffect_Implementation(const FVector_NetQuantize& HitPoint, const FVector_NetQuantize& HitNormal)
 {
 	Multi_SpawnFireEffect(HitPoint, HitNormal);
@@ -312,42 +296,37 @@ void ACar::Multi_SpawnFireEffect_Implementation(const FVector_NetQuantize& HitPo
 
 		UNiagaraComponent* RightGunSparks = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), SparkBurst, HitPoint, FRotator(0.f));
 		RightGunEffect->SetNiagaraVariableVec3(FString("BurstDirection"), HitNormal);
-
-		
 	}
 }
 void ACar::Server_ProjectileSpawn_Implementation(const FVector& direction, const FVector& spawnPos, const FVector& carVelocity, const float charge)
 {
 	if(Gun_p)
 		Gun_p->ShootProjectile(direction, spawnPos, carVelocity, charge);
+	else
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString(TEXT("Gun null")));
 }
-
 void ACar::ShootProjectile(const FInputActionValue& Value)
 {
 	if (projectileCooldown)
+	{
 		return;
-
+	}
+	
 	if (HasAuthority())
 	{
-		FVector spawnPoint = ArrowComp->GetComponentTransform().GetTranslation();
+		FVector spawnPoint = ArrowCompProjectile->GetComponentTransform().GetTranslation();
 		if (Gun_p) {
 			Gun_p->ShootProjectile(GetControlRotation().Vector(), spawnPoint, CarStaticMesh->GetComponentVelocity(), projectileChargeProgress);
 			projectileCooldown = true;
 		}
 	}
 	else {
-		
-		FVector spawnPoint = ArrowComp->GetComponentTransform().GetTranslation();
+		FVector spawnPoint = ArrowCompProjectile->GetComponentTransform().GetTranslation();
 		if (Gun_p) {
 			Server_ProjectileSpawn(GetControlRotation().Vector(), spawnPoint, CarStaticMesh->GetComponentVelocity(), projectileChargeProgress);
 			projectileCooldown = true;
 		}
-
 	}
-
-	
-
-	
 }
 void ACar::ChargeProjectile(const FInputActionValue& Value)
 {
@@ -378,7 +357,6 @@ void ACar::UpdateGunRotation()
 				{
 					GliderGunBeltMesh->SetRelativeRotation(FRotator(0.f, remaped - CarStaticMesh->GetRelativeRotation().Yaw + 180.f, 0.f));
 				}
-
 			}
 		}
 	}
@@ -418,5 +396,4 @@ void ACar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProp
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME_CONDITION(ACar, Gun_p, COND_OwnerOnly);
-	
 }

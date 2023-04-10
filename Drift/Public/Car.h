@@ -120,6 +120,7 @@ protected:
 
 public:	
 
+	//GLIDER COMPONENTS //////////////////////////////
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UCapsuleComponent* Capsule;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -146,9 +147,12 @@ public:
 	
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
 	FRotator GunBeltRotation = FRotator(0, 0, 0);
+
+	UPROPERTY(EditAnywhere)
+	UArrowComponent* ArrowCompProjectile;
 	
 private:
-	//Input and Fire 
+	//INPUT INDICATORS AND FIRE HANDLING 
 	bool projectileCooldown = false;
 	bool IsAccelerating = false;
 	float  accelerateInput = 0.0f;
@@ -157,8 +161,7 @@ private:
 	bool ThrusterActive = false;
 	bool IsProjectileCharging = false;
 
-	UPROPERTY(EditAnywhere)
-	UArrowComponent* ArrowComp;
+	
 	FTimerHandle FireTimer;
 	UPROPERTY(EditAnywhere, Category = Combat)
 	float FireDelay = .15f;
@@ -183,11 +186,10 @@ private:
 	bool bElimmed = false;
 	class AGliderController* GliderPlayerController;
 
-
 protected:
 	///INPUT ACTIONS //////////////////////////////////////////
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-		UInputMappingContext* CarMappingContext;
+	UInputMappingContext* CarMappingContext;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 		UInputAction* MoveAction;

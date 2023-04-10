@@ -35,5 +35,4 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Projectile")
 	TSubclassOf<AProjectile> BP_Projectile;
-
 };
