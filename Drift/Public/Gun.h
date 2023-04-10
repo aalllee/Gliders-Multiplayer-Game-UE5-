@@ -30,20 +30,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, Category = "GunFX")
-	UNiagaraSystem* Beam;
-
-	UPROPERTY(EditAnywhere, Category = "GunFX")
-	UNiagaraSystem* SparkBurst;
-
 	UPROPERTY(EditAnywhere, Category = "GunSettings")
 	float gunRange = 1000.0f;
 
-	
-
 	UPROPERTY(EditAnywhere, Category = "Projectile")
 	TSubclassOf<AProjectile> BP_Projectile;
-
-private:
 
 };

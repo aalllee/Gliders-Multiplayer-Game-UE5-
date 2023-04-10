@@ -16,7 +16,6 @@ class DRIFT_API AGliderHUD : public AHUD
 
 public:
 	virtual void DrawHUD() override;
-
 	UPROPERTY(EditAnywhere, Category = "user widgets")
 	TSubclassOf<class UUserWidget> CharacterOverlayClass;
 	UPROPERTY(EditAnywhere, Category = "user widgets")
@@ -27,11 +26,5 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-	void AddCharacterOverlay();
-private:
-	
-	UPROPERTY(EditAnywhere, Category = "TEXTURES")
-	UTexture2D* CrosshairTexture;
-
-	
+	void AddCharacterOverlay();	
 };

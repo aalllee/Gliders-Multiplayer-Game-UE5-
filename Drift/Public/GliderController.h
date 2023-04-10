@@ -13,8 +13,6 @@ UCLASS()
 class DRIFT_API AGliderController : public APlayerController
 {
 	GENERATED_BODY()
-	
-	//virtual void Tick(float DeltaSeconds) override;
 public:
 	void SetHUDCharge(float Charge);
 	virtual void OnPossess(APawn* InPawn) override;

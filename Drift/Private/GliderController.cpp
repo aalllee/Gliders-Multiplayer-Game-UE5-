@@ -11,19 +11,15 @@
 void AGliderController::BeginPlay()
 {
 	Super::BeginPlay();
-
 	GliderHUD = Cast<AGliderHUD>(GetHUD());
 }
-
 void AGliderController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 }
-
 void AGliderController::SetHUDCharge(float Charge)
 {
 	GliderHUD = (GliderHUD == nullptr) ? Cast<AGliderHUD>(GetHUD()) : GliderHUD;
-
 	if (GliderHUD
 		&& GliderHUD->CharacterOverlay
 		&& GliderHUD->CharacterOverlay->ProjectileChargeBar)

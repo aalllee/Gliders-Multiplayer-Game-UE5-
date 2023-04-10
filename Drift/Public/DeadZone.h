@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-
 #include "DeadZone.generated.h"
 
 UCLASS()
@@ -13,11 +12,8 @@ class DRIFT_API ADeadZone : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ADeadZone();
-
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
@@ -31,9 +27,7 @@ protected:
 		);
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 private:
 	UPROPERTY(VisibleAnywhere)
 	class UBoxComponent* DeadZoneBox;

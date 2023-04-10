@@ -14,13 +14,6 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	NewPlayer->GetSeamlessTravelActorList(false, actorList);
 	actorList.Add(NewPlayer->GetPawn());
 	
-	for (auto actor : actorList)
-	{
-		actorList[0]->GetName();
-	}
-	
-	GEngine->AddOnScreenDebugMessage(-1, 1000.f, FColor::Turquoise, FString("Car name") + NewPlayer->GetName());
-
 	if (NumberOfPlayers == 2)
 	{
 		UWorld* World = GetWorld();

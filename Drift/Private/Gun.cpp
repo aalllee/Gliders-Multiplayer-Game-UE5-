@@ -34,13 +34,12 @@ FHitResult AGun::Shoot(const FVector& traceStart, const FVector& traceDir, const
 
 	if (Hit.bBlockingHit && IsValid(Hit.GetActor()))
 	{
-		UE_LOG(LogTemp, Log, TEXT("Trace hit actor: %s"), *Hit.GetActor()->GetName());
 		if (ACar* car_p = dynamic_cast<ACar*>(Hit.GetActor())) {
 			Server_AddOnHitImpulse(traceDir * hitImpulse, car_p);
 		}
 	}
 	else {
-		UE_LOG(LogTemp, Log, TEXT("No Actors were hit"));
+		//no hit
 		Hit.ImpactPoint = FVector_NetQuantize(TraceEnd);
 		Hit.ImpactNormal = FVector_NetQuantize(FVector(0));
 	}
@@ -58,11 +57,8 @@ void AGun::ShootProjectile(const FVector& direction, const FVector& spawnPos, co
 }
 void AGun::Server_AddOnHitImpulse_Implementation(const FVector_NetQuantize& Impulse, ACar* hitCar)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Purple, FString("server call"));
 	if(hitCar)
 		hitCar->CarStaticMesh->AddImpulse(Impulse);
-	else
-		GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Purple, FString("Hit car null"));
 }
 
 
