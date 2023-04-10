@@ -31,54 +31,20 @@ void AProjectile::BeginPlay()
 	Super::BeginPlay();
 	SetLifeSpan(lifespan);
 }
-
-
-/*
-bool AProjectile::Server_SpawnNiagaraSystem_Validate(UNiagaraSystem* niagaraSys, FVector Location, FRotator Rotation)
-{
-	return true;
-}
-
-void AProjectile::Server_SpawnNiagaraSystem_Implementation(UNiagaraSystem* niagaraSys, FVector Location, FRotator Rotation)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, TEXT("Server"));
-	MULTI_SpawnNiagaraSystem(niagaraSys, Location, Rotation);
-	//UNiagaraComponent* NiagaraProjectileExplosion = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), niagaraSys, Location, Rotation);
-}
-
-bool AProjectile::MULTI_SpawnNiagaraSystem_Validate(UNiagaraSystem* niagaraSys, FVector Location, FRotator Rotation)
-{
-	return true;
-}
-
-void AProjectile::MULTI_SpawnNiagaraSystem_Implementation(UNiagaraSystem* niagaraSys, FVector Location, FRotator Rotation)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red, TEXT("Multicast"));
-	GEngine->AddOnScreenDebugMessage(-1, 8, FColor::Red,FString("spawn at")+ Location.ToString());
-
-	UNiagaraComponent* NiagaraProjectileExplosion = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), niagaraSys, Location, Rotation);
-}
-*/
-
 void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-
 void AProjectile::fire(const FVector& linearVelocity, const FVector& direction, const float charge)
 {
 	float speed = FMath::GetMappedRangeValueClamped(FVector2D(0.f, 1.f), FVector2D(MinSpeed, MaxSpeed), charge);
 	projectileMesh->SetPhysicsLinearVelocity(linearVelocity);
 	projectileMesh->AddImpulse(direction * speed);
 }
-
-
-
 float AProjectile::getLifeSpan()
 {
 	return this->lifespan;
 }
-
 void AProjectile::Destroyed()
 {
 	if (ProjectileExplosion)
@@ -93,7 +59,6 @@ void AProjectile::Destroyed()
 	
 	Super::Destroyed();
 }	
-
 void AProjectile::moveSurroundingGliders()
 {
 	TSet<AActor*> GlidersInRange;

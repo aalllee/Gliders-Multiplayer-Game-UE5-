@@ -19,13 +19,13 @@ public:
 	AProjectile();
 	virtual void Tick(float DeltaTime) override;
 	void fire(const FVector& linearVelocity, const FVector& direction, const float charge);
-
 	float getLifeSpan();
 	void Destroyed() override;
 	void moveSurroundingGliders();
 
 protected:
 	virtual void BeginPlay() override;
+
 	UPROPERTY(EditAnywhere)
 	float MaxSpeed = 30000.0f;
 
@@ -33,23 +33,14 @@ protected:
 	float MinSpeed = 10000.0f;
 
 	UPROPERTY(EditAnywhere)
-		float addGravity = -500.0f;
+	float lifespan = 3.0f;
 
+	UPROPERTY(EditAnywhere)
+	float explosionRadius = 2500.f;
 
-	//
-	//RPCS
-	//
-	/*
-	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_SpawnNiagaraSystem(UNiagaraSystem* niagaraSys,FVector Location, FRotator Rotation);
-	bool Server_SpawnNiagaraSystem_Validate(UNiagaraSystem* niagaraSys, FVector Location, FRotator Rotation);
-	void Server_SpawnNiagaraSystem_Implementation(UNiagaraSystem* niagaraSys, FVector Location, FRotator Rotation);
+	UPROPERTY(EditAnywhere)
+	float explosionStrength = 100000.f;
 
-	UFUNCTION(NetMulticast, Reliable, WithValidation)
-	void MULTI_SpawnNiagaraSystem(UNiagaraSystem* niagaraSys, FVector Location, FRotator Rotation);
-	bool MULTI_SpawnNiagaraSystem_Validate(UNiagaraSystem* niagaraSys, FVector Location, FRotator Rotation);
-	void MULTI_SpawnNiagaraSystem_Implementation(UNiagaraSystem* niagaraSys, FVector Location, FRotator Rotation);
-*/
 private:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* projectileMesh;
@@ -66,16 +57,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UProjectileMovementComponent* ProjectileMovementComponent;
 
-	UPROPERTY(EditAnywhere)
-	float lifespan = 3.0f;
-
-
-	UPROPERTY(EditAnywhere, Category = "GunFireFX")
+	UPROPERTY(EditAnywhere, Category = "ProjectileFX")
 	UNiagaraSystem* ProjectileExplosion;
-
-	UPROPERTY(EditAnywhere)
-	float explosionRadius = 2500.f;
-
-	UPROPERTY(EditAnywhere)
-	float explosionStrength = 100000.f;
 };
